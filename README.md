@@ -1,6 +1,6 @@
 Usage: lua_scr [-h] [--get_geolocation] [--download_speed]
        [--upload_speed] [--find_best_location] [--perform_whole]
-       [<address>]
+       (argument (urlsssssssssssssssssssssssssssssssssssss))
 
 Internet speed calculator
 
