@@ -98,7 +98,7 @@ elseif args["find_best_location"] then
     success, serverList = pcall(Calculator.get_server_list)
 
     if not success then
-        print("Ip address is incorrect or connection was terminated")
+        print("Couldn't get server list")
     end
 
     if serverList then
