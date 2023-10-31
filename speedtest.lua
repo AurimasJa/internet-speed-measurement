@@ -192,7 +192,7 @@ function SpeedTest.find_server_latency(serverList, country)
             end
         end
     end
-    SpeedTest.find_best_location(serverData)
+    return serverData
 end
 
 function SpeedTest.find_best_location(servers)
@@ -212,7 +212,7 @@ function SpeedTest.find_best_location(servers)
         best_latency = string.format("%.6f", best_latency)
     }
     local json_results = cjson.encode(results)
-    return print(json_results)
+    return json_results
 end
 
 return SpeedTest
