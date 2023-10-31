@@ -50,7 +50,8 @@ function SpeedTest.download_speed(url)
     local download_time = download_ended - download_started
     local speed = easy:getinfo_speed_download() / 1024 / 1024 * 8
     easy:close()
-    return nil, download_time, speed
+    local json = cjson.encode({ download_time = string.format("%.4f", download_time) .. " s", download_speed = string.format("%.4f", speed) .. "Mbps" })
+    return nil, json
 end
 
 local function upload_progress(_, _, _, upnow)
@@ -99,7 +100,8 @@ function SpeedTest.upload_speed(url)
     local speed = easy:getinfo_speed_upload() / 1024 / 1024 * 8
 
     easy:close()
-    return nil, upload_time, speed
+    local json = cjson.encode({ upload_time = string.format("%.4f", upload_time) .. " s", upload_speed = string.format("%.4f", speed) .. "Mbps" })
+    return nil, json
 end
 
 function SpeedTest.get_geolocation()
