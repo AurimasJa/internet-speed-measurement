@@ -55,22 +55,19 @@ elseif args["get_geolocation"] then
         print(country)
     end
 elseif args["download_speed"] then
-    errorMessage, download_time, download_speed = SpeedTest.download_speed(args.address[1])
+    errorMessage, download = SpeedTest.download_speed(args.address[1])
     if errorMessage then
         print(errorMessage)
     else
-        print("Download time (in seconds): " ..
-            string.format("%.4f", download_time),
-            "Speed: " .. string.format("%.4f", download_speed) .. " Mbps")
+        print(download)
     end
 elseif args["upload_speed"] then
-    errorMessage, upload_time, upload_speed = SpeedTest.upload_speed(args.address[1])
+    errorMessage, upload = SpeedTest.upload_speed(args.address[1])
 
     if errorMessage then
         print(errorMessage)
     else
-        print("Upload: " .. string.format("%.4f", upload_time) .. " total time passed (seconds)",
-            string.format("%.4f", upload_speed) .. " Mbps")
+        print(upload)
     end
 elseif args["find_best_location"] then
     errorMessage, country = SpeedTest.get_geolocation()
