@@ -1,12 +1,12 @@
 local SpeedTest = require("speedtest")
 local argparse = require("argparse")
 local errorMessage, serverList, country, download_time, upload_time, speed = nil, nil, nil, nil, nil, nil
-local parser = argparse("lua_scr", "Internet speed calculator")
+local parser = argparse("lua_scr", "Internet speed measurement")
 parser:command_target("command")
 parser:flag("-g --get_geolocation"):description("Find your location")
 parser:flag("-d --download_speed"):description("Measure download speed")
 parser:flag("-u --upload_speed"):description("Measure upload speed")
-parser:flag("-f --find_best_location"):description("Find best speed")
+parser:flag("-f --find_best_location"):description("Find best server latency")
 parser:flag("-p --perform_whole"):description("Find your location")
 parser:argument("address"):args("*"):description("Address for your download and upload speed measurement")
 
