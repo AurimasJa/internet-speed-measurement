@@ -1,6 +1,7 @@
 local SpeedTest = require("speedtest")
 local argparse = require("argparse")
-local errorMessage, serverList, country, download_time, upload_time, speed = nil, nil, nil, nil, nil, nil
+local cjson = require("cjson")
+local errorMessage, serverList, country, download_time, upload_time, download_speed, serverData, bestServer, upload_speed = nil, nil, nil,nil, nil, nil, nil, nil, nil
 local parser = argparse("lua_scr", "Internet speed measurement")
 parser:command_target("command")
 parser:flag("-g --get_geolocation"):description("Find your location")
@@ -13,24 +14,6 @@ parser:argument("address"):args("*"):description("Address for your download and 
 local args = parser:parse()
 
 if args["perform_whole"] then
-    errorMessage, download_time, speed = SpeedTest.download_speed("speed-kaunas.telia.lt:8080/")
-    if errorMessage then
-        print("Error: ", errorMessage)
-    else
-        print("Download time (in seconds): " ..
-            string.format("%.4f", download_time),
-            "Speed: " .. string.format("%.4f", speed) .. " Mbps")
-    end
-
-    errorMessage, upload_time, speed = SpeedTest.upload_speed(
-        "https://speedtest.kis.lt.prod.hosts.ooklaserver.net:8080/")
-
-    if errorMessage then
-        print("Error: ", errorMessage)
-    else
-        print("Upload: " .. string.format("%.4f", upload_time) .. " total time passed (seconds)",
-            string.format("%.4f", speed) .. " Mbps")
-    end
     errorMessage, country = SpeedTest.get_geolocation()
     if errorMessage then
         print("Error: ", errorMessage)
@@ -39,7 +22,35 @@ if args["perform_whole"] then
     end
 
     serverList = SpeedTest.get_server_list()
-    SpeedTest.find_server_latency(serverList, country)
+    serverData = SpeedTest.find_server_latency(serverList, country)
+    bestServer = SpeedTest.find_best_location(serverData)
+    if not bestServer then
+        print("Error: getting best server")
+    else
+        local decodedBestServer = cjson.decode(bestServer)
+        errorMessage, download_time, download_speed = SpeedTest.download_speed()
+        if errorMessage then
+            print("Error: ", errorMessage)
+        end
+        errorMessage, upload_time, upload_speed = SpeedTest.upload_speed(decodedBestServer.best_server)
+        if errorMessage then
+            print("Error: ", errorMessage)
+        end
+        if country then
+            print(country)
+        end
+        if bestServer then
+            print(bestServer)
+        end
+        if download_time and download_speed then
+            print("Download time (in seconds): " .. string.format("%.4f", download_time),
+                "Speed: " .. string.format("%.4f", download_speed) .. " Mbps")
+        end
+        if upload_time and upload_speed then
+            print("Upload: " .. string.format("%.4f", upload_time) .. " total time passed (seconds)",
+                string.format("%.4f", upload_speed) .. " Mbps")
+        end
+    end
 elseif args["get_geolocation"] then
     errorMessage, country = SpeedTest.get_geolocation()
     if errorMessage then
@@ -48,22 +59,22 @@ elseif args["get_geolocation"] then
         print(country)
     end
 elseif args["download_speed"] then
-    errorMessage, download_time, speed = SpeedTest.download_speed(args.address[1])
+    errorMessage, download_time, download_speed = SpeedTest.download_speed(args.address[1])
     if errorMessage then
         print("Error: ", errorMessage)
     else
         print("Download time (in seconds): " ..
             string.format("%.4f", download_time),
-            "Speed: " .. string.format("%.4f", speed) .. " Mbps")
+            "Speed: " .. string.format("%.4f", download_speed) .. " Mbps")
     end
 elseif args["upload_speed"] then
-    errorMessage, upload_time, speed = SpeedTest.upload_speed(args.address[1])
+    errorMessage, upload_time, upload_speed = SpeedTest.upload_speed(args.address[1])
 
     if errorMessage then
         print("Error: ", errorMessage)
     else
         print("Upload: " .. string.format("%.4f", upload_time) .. " total time passed (seconds)",
-            string.format("%.4f", speed) .. " Mbps")
+            string.format("%.4f", upload_speed) .. " Mbps")
     end
 elseif args["find_best_location"] then
     errorMessage, country = SpeedTest.get_geolocation()
