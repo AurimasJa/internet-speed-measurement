@@ -34,7 +34,7 @@ function SpeedTest.download_speed(url)
         connecttimeout = 3,
         writefunction = io.open("/dev/null", "wb"),
         noprogress = false,
-        timeout = 4,
+        timeout = 10,
         progressfunction = download_progress
     }
     download_started = socket.gettime()
@@ -82,7 +82,7 @@ function SpeedTest.upload_speed(url)
         progressfunction = upload_progress,
         noprogress = false,
         writefunction = io.open("/dev/null", "r+"),
-        timeout = 5,
+        timeout = 10,
     })
 
     upload_started = socket.gettime()
@@ -95,6 +95,7 @@ function SpeedTest.upload_speed(url)
         end
     end
 
+    print("Test completed successfully")
     local upload_ended = socket.gettime()
     local upload_time = upload_ended - upload_started
     local speed = easy:getinfo_speed_upload() / 1024 / 1024 * 8
