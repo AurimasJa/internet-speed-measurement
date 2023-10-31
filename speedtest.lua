@@ -4,10 +4,13 @@ local socket = require "socket"
 local ErrorHandling = require("error_handling")
 
 local SpeedTest = {}
+local response_data = {}
 local success, result = nil, nil
-
-
 local download_started = socket.gettime()
+local upload_started = socket.gettime()
+local USER_AGENT =
+"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"
+
 local function download_progress(dltotal, dlnow, _, _)
     local speed = dlnow / (socket.gettime() - download_started)
     local averageSpeed = speed / 1024 / 1024 * 8
@@ -20,9 +23,6 @@ local function download_progress(dltotal, dlnow, _, _)
     }
     if dltotal > 0 then print(cjson.encode(data)) end
 end
-
-USER_AGENT =
-"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"
 
 function SpeedTest.download_speed(url)
     if not url then
@@ -54,7 +54,6 @@ function SpeedTest.download_speed(url)
     return nil, download_time, speed
 end
 
-local upload_started = socket.gettime()
 local function upload_progress(_, _, _, upnow)
     local speed = upnow / (socket.gettime() - upload_started)
     local averageSpeed = speed / 1024 / 1024 * 8
@@ -104,14 +103,12 @@ function SpeedTest.upload_speed(url)
     return nil, upload_time, speed
 end
 
-local response_data = {}
-local function table_insert(data)
-    table.insert(response_data, data)
-end
 function SpeedTest.get_geolocation()
     local easy = curl.easy {
         url = "https://api.myip.com/",
-        writefunction = table_insert,
+        writefunction = function(data)
+            table.insert(response_data, data)
+        end,
     }
     success, result = pcall(easy.perform, easy)
     if not success then
