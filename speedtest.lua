@@ -1,7 +1,7 @@
 local curl = require("cURL")
 local cjson = require("cjson")
 local socket = require "socket"
-local error_handling = require("error_handling")
+local ErrorHandling = require("error_handling")
 
 local SpeedTest = {}
 local success, result = nil, nil
@@ -26,7 +26,7 @@ USER_AGENT =
 
 function SpeedTest.download_speed(url)
     if not url then
-        return error_handling.custom_error("URL is not provided")
+        return ErrorHandling.custom_error("URL is not provided")
     end
     local easy = curl.easy {
         url = url .. "/download",
@@ -40,9 +40,9 @@ function SpeedTest.download_speed(url)
     download_started = socket.gettime()
     success, result = pcall(easy.perform, easy)
     if not success then
-        local errorMessage = error_handling.handle_error_message(result)
+        local errorMessage = ErrorHandling.handle_error_message(result)
         if not (string.match(errorMessage, "28")) or easy:getinfo_connect_time() == 0 then
-            errorMessage = error_handling.custom_error(errorMessage)
+            errorMessage = ErrorHandling.custom_error(errorMessage)
             return errorMessage
         end
     end
@@ -69,7 +69,7 @@ end
 
 function SpeedTest.upload_speed(url)
     if not url then
-        return error_handling.custom_error("URL is not provided")
+        return ErrorHandling.custom_error("URL is not provided")
     end
 
     local easy = curl.easy({
@@ -89,9 +89,9 @@ function SpeedTest.upload_speed(url)
 
     success, result = pcall(easy.perform, easy)
     if not success then
-        local errorMessage = error_handling.handle_error_message(result)
+        local errorMessage = ErrorHandling.handle_error_message(result)
         if not (string.match(errorMessage, "28")) or easy:getinfo_connect_time() == 0 then
-            return error_handling.custom_error(errorMessage)
+            return ErrorHandling.custom_error(errorMessage)
         end
     end
 
@@ -116,8 +116,8 @@ function SpeedTest.get_geolocation()
     success, result = pcall(easy.perform, easy)
     if not success then
         easy:close()
-        local errorMessage = error_handling.handle_error_message(result)
-        return error_handling.custom_error(errorMessage)
+        local errorMessage = ErrorHandling.handle_error_message(result)
+        return ErrorHandling.custom_error(errorMessage)
     end
 
     easy:close()
@@ -143,8 +143,8 @@ function SpeedTest.download_file()
     success, result = pcall(easy.perform, easy)
     if not success then
         file:close()
-        local errorMessage = error_handling.handle_error_message(result)
-        return error_handling.custom_error(errorMessage)
+        local errorMessage = ErrorHandling.handle_error_message(result)
+        return ErrorHandling.custom_error(errorMessage)
     end
     file:close()
 end
@@ -164,9 +164,12 @@ function SpeedTest.get_server_list()
 end
 
 function SpeedTest.find_server_latency(serverList, country)
+    if not country then
+        return ErrorHandling.custom_error("Country is not provided")
+    end
     local decodedCountry = cjson.decode(country)
     if not serverList then
-        return error_handling.custom_error("Server list is not provided")
+        return ErrorHandling.custom_error("Server list is not provided")
     end
     local serverData = cjson.decode(serverList[1])
     for _, server in pairs(serverData) do
