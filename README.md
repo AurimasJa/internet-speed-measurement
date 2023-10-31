@@ -1,16 +1,15 @@
-Usage: lua_scr [-h] [--get_geolocation] [--download_speed]
-       [--upload_speed] [--find_best_location] [--perform_whole]
-       (argument (url))
+Usage: lua_scr [-h] [-g] [-d] [-u] [-f] [-p] [(argument url)] ...
 
-Internet speed calculator
+Internet speed measurement
 
 Arguments:
    address               Address for your download and upload speed measurement
 
 Options:
    -h, --help            Show this help message and exit.
-   --get_geolocation     Find your location
-   --download_speed      Measure download speed
-   --upload_speed        Measure upload speed
-   --find_best_location  Find best speed
-   --perform_whole       Find your location
+   -g, --get_geolocation Find your location
+   -d, --download_speed  Measure download speed
+   -u, --upload_speed    Measure upload speed
+   -f, --find_best_location
+                         Find best server latency
+   -p, --perform_whole   Find your location
