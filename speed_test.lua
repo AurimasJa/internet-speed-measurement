@@ -16,9 +16,7 @@ local args = parser:parse()
 if args["perform_whole"] then
     errorMessage, country = SpeedTest.get_geolocation()
     if errorMessage then
-        print("Error: ", errorMessage)
-    else
-        print(country)
+        print(errorMessage)
     end
 
     serverList = SpeedTest.get_server_list()
@@ -30,11 +28,11 @@ if args["perform_whole"] then
         local decodedBestServer = cjson.decode(bestServer)
         errorMessage, download_time, download_speed = SpeedTest.download_speed(decodedBestServer.best_server)
         if errorMessage then
-            print("Error: ", errorMessage)
+            print(errorMessage)
         end
         errorMessage, upload_time, upload_speed = SpeedTest.upload_speed(decodedBestServer.best_server)
         if errorMessage then
-            print("Error: ", errorMessage)
+            print(errorMessage)
         end
         if country then
             print(country)
@@ -54,14 +52,14 @@ if args["perform_whole"] then
 elseif args["get_geolocation"] then
     errorMessage, country = SpeedTest.get_geolocation()
     if errorMessage then
-        print("Error: ", errorMessage)
+        print(errorMessage)
     else
         print(country)
     end
 elseif args["download_speed"] then
     errorMessage, download_time, download_speed = SpeedTest.download_speed(args.address[1])
     if errorMessage then
-        print("Error: ", errorMessage)
+        print(errorMessage)
     else
         print("Download time (in seconds): " ..
             string.format("%.4f", download_time),
@@ -71,7 +69,7 @@ elseif args["upload_speed"] then
     errorMessage, upload_time, upload_speed = SpeedTest.upload_speed(args.address[1])
 
     if errorMessage then
-        print("Error: ", errorMessage)
+        print(errorMessage)
     else
         print("Upload: " .. string.format("%.4f", upload_time) .. " total time passed (seconds)",
             string.format("%.4f", upload_speed) .. " Mbps")
@@ -79,13 +77,18 @@ elseif args["upload_speed"] then
 elseif args["find_best_location"] then
     errorMessage, country = SpeedTest.get_geolocation()
     if errorMessage then
-        print("Error: ", errorMessage)
+        print(errorMessage)
     else
         print(country)
     end
-
     serverList = SpeedTest.get_server_list()
-    SpeedTest.find_server_latency(serverList, country)
+    serverData = SpeedTest.find_server_latency(serverList, country)
+    bestServer = SpeedTest.find_best_location(serverData)
+    if not bestServer then
+        print("Error: getting best server")
+    else
+        print(bestServer)
+    end
 else
     print(parser:get_help())
 end
