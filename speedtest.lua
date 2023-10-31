@@ -40,10 +40,9 @@ function SpeedTest.download_speed(url)
     download_started = socket.gettime()
     success, result = pcall(easy.perform, easy)
     if not success then
-        local errorMessage = ErrorHandling.handle_error_message(result)
-        if not (string.match(errorMessage, "28")) or easy:getinfo_connect_time() == 0 then
-            errorMessage = ErrorHandling.custom_error(errorMessage)
-            return errorMessage
+        local errorCode = ErrorHandling.handle_error_message_by_code(result)
+        if not (string.match(result, "28")) or easy:getinfo_connect_time() == 0 then
+            return ErrorHandling.custom_error_by_key(errorCode)
         end
     end
     print("Test completed successfully")
@@ -88,9 +87,9 @@ function SpeedTest.upload_speed(url)
 
     success, result = pcall(easy.perform, easy)
     if not success then
-        local errorMessage = ErrorHandling.handle_error_message(result)
-        if not (string.match(errorMessage, "28")) or easy:getinfo_connect_time() == 0 then
-            return ErrorHandling.custom_error(errorMessage)
+        local errorCode = ErrorHandling.handle_error_message_by_code(result)
+        if not (string.match(result, "28")) or easy:getinfo_connect_time() == 0 then
+            return ErrorHandling.custom_error_by_key(errorCode)
         end
     end
 
@@ -113,8 +112,10 @@ function SpeedTest.get_geolocation()
     success, result = pcall(easy.perform, easy)
     if not success then
         easy:close()
-        local errorMessage = ErrorHandling.handle_error_message(result)
-        return ErrorHandling.custom_error(errorMessage)
+        local errorCode = ErrorHandling.handle_error_message_by_code(result)
+        if not (string.match(result, "28")) or easy:getinfo_connect_time() == 0 then
+            return ErrorHandling.custom_error_by_key(errorCode)
+        end
     end
 
     easy:close()
@@ -140,8 +141,10 @@ function SpeedTest.download_file()
     success, result = pcall(easy.perform, easy)
     if not success then
         file:close()
-        local errorMessage = ErrorHandling.handle_error_message(result)
-        return ErrorHandling.custom_error(errorMessage)
+        local errorCode = ErrorHandling.handle_error_message_by_code(result)
+        if not (string.match(result, "28")) or easy:getinfo_connect_time() == 0 then
+            return ErrorHandling.custom_error_by_key(errorCode)
+        end
     end
     file:close()
 end
@@ -162,11 +165,11 @@ end
 
 function SpeedTest.find_server_latency(serverList, country)
     if not country then
-        return ErrorHandling.custom_error("Country is not provided")
+        return ErrorHandling.custom_error_by_key("no_country")
     end
     local decodedCountry = cjson.decode(country)
     if not serverList then
-        return ErrorHandling.custom_error("Server list is not provided")
+        return ErrorHandling.custom_error("no_server_list")
     end
     local serverData = cjson.decode(serverList[1])
     for _, server in pairs(serverData) do
@@ -193,6 +196,9 @@ function SpeedTest.find_server_latency(serverList, country)
 end
 
 function SpeedTest.find_best_location(servers)
+    if not servers then
+        return ErrorHandling.custom_error_by_key("no_server_list")
+    end
     local best_server = nil
     local best_latency = math.huge
     for _, value in pairs(servers) do
@@ -202,7 +208,7 @@ function SpeedTest.find_best_location(servers)
         end
     end
     if not best_server then
-        return print("There were no servers to compare")
+        return ErrorHandling.custom_error_by_key("no_servers_compare")
     end
     local results = {
         best_server = best_server,
