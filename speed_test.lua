@@ -1,7 +1,7 @@
 local SpeedTest = require("speedtest")
 local argparse = require("argparse")
 local cjson = require("cjson")
-local errorMessage, serverList, country, download_time, upload_time, download_speed, serverData, bestServer, upload_speed = nil, nil, nil,nil, nil, nil, nil, nil, nil
+local errorMessage, serverList, country, download, upload, serverData, bestServer = nil, nil, nil,nil, nil, nil, nil
 local parser = argparse("lua_scr", "Internet speed measurement")
 parser:command_target("command")
 parser:flag("-g --get_geolocation"):description("Find your location")
@@ -26,11 +26,11 @@ if args["perform_whole"] then
         print("Error: getting best server")
     else
         local decodedBestServer = cjson.decode(bestServer)
-        errorMessage, download_time, download_speed = SpeedTest.download_speed(decodedBestServer.best_server)
+        errorMessage, download = SpeedTest.download_speed(decodedBestServer.best_server)
         if errorMessage then
             print(errorMessage)
         end
-        errorMessage, upload_time, upload_speed = SpeedTest.upload_speed(decodedBestServer.best_server)
+        errorMessage, upload = SpeedTest.upload_speed(decodedBestServer.best_server)
         if errorMessage then
             print(errorMessage)
         end
@@ -40,13 +40,11 @@ if args["perform_whole"] then
         if bestServer then
             print(bestServer)
         end
-        if download_time and download_speed then
-            print("Download time (in seconds): " .. string.format("%.4f", download_time),
-                "Speed: " .. string.format("%.4f", download_speed) .. " Mbps")
+        if download then
+            print(download)
         end
-        if upload_time and upload_speed then
-            print("Upload: " .. string.format("%.4f", upload_time) .. " total time passed (seconds)",
-                string.format("%.4f", upload_speed) .. " Mbps")
+        if upload then
+            print(upload)
         end
     end
 elseif args["get_geolocation"] then
