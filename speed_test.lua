@@ -28,7 +28,7 @@ if args["perform_whole"] then
         print("Error: getting best server")
     else
         local decodedBestServer = cjson.decode(bestServer)
-        errorMessage, download_time, download_speed = SpeedTest.download_speed()
+        errorMessage, download_time, download_speed = SpeedTest.download_speed(decodedBestServer.best_server)
         if errorMessage then
             print("Error: ", errorMessage)
         end
