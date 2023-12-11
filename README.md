@@ -1,15 +1,22 @@
-Usage: lua_scr [-h] [-g] [-d] [-u] [-f] [-p] [(argument url)] ...
+# Internet speed measurement app
+This application will measure your internet speed using your current location and will use best server for your location.
 
-Internet speed measurement
+## Usage
+Usage: lua_scr [-h] [-g] [-d] [-u] [-f] [-p] ...
 
-Arguments:
-   address               Address for your download and upload speed measurement
+Internet speed measurement</br>
 
-Options:
-   -h, --help            Show this help message and exit.
-   -g, --get_geolocation Find your location
-   -d, --download_speed  Measure download speed
-   -u, --upload_speed    Measure upload speed
-   -f, --find_best_location
-                         Find best server latency
-   -p, --perform_whole   Find your location
+Arguments:</br>
+   address               Address for your download and upload speed measurement</br>
+</br>
+Options:</br>
+   -h, --help            Show this help message and exit.</br>
+   -g, --get_geolocation Find your location</br>
+   -d, --download_speed  Measure download speed</br>
+   -u, --upload_speed    Measure upload speed</br>
+   -f, --find_best_location</br>
+                         Find best server latency</br>
+   -p, --perform_whole   Perform whole script </br>
+
+
+This script includes some unit tests
